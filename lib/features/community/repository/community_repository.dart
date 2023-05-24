@@ -6,6 +6,7 @@ import 'package:reddity/core/failure.dart';
 import 'package:reddity/core/providers/firebase_providers.dart';
 import 'package:reddity/core/type_defs.dart';
 import 'package:reddity/models/community_model.dart';
+import 'package:reddity/models/post_model.dart';
 
 final communityRepositoryProvider = Provider((ref) {
   return CommunityRepository(firebaseFirestore: ref.watch(firestoreProvider));
@@ -136,5 +137,20 @@ class CommunityRepository {
     } catch (e) {
       return left(Failure(message: e.toString()));
     }
+  }
+
+  CollectionReference get _posts =>
+      _firebaseFirestore.collection(FirebaseConstants.postsCollection);
+
+  Stream<List<Post>> getCommunityPosts(String communityName) {
+    return _posts
+        .where('communityName', isEqualTo: communityName)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (event) => event.docs
+              .map((e) => Post.fromMap(e.data() as Map<String, dynamic>))
+              .toList(),
+        );
   }
 }

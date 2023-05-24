@@ -5,8 +5,8 @@ import 'package:reddity/core/constants/firebase_constants.dart';
 import 'package:reddity/core/failure.dart';
 import 'package:reddity/core/providers/firebase_providers.dart';
 import 'package:reddity/core/type_defs.dart';
+import 'package:reddity/models/post_model.dart';
 import 'package:reddity/models/user_model.dart';
-
 
 final userProfileRepositoryProvider = Provider((ref) {
   return UserProfileRepository(firebaseFirestore: ref.watch(firestoreProvider));
@@ -22,6 +22,9 @@ class UserProfileRepository {
   CollectionReference get _users =>
       _firebaseFirestore.collection(FirebaseConstants.usersCollection);
 
+  CollectionReference get _posts =>
+      _firebaseFirestore.collection(FirebaseConstants.postsCollection);
+
   FutureVoid editCommunity(UserModel user) async {
     try {
       return right(_users.doc(user.uid).update(user.toMap()));
@@ -32,5 +35,15 @@ class UserProfileRepository {
     }
   }
 
-
+  Stream<List<Post>> getUserPosts(String uid) {
+    return _posts
+        .where('uid', isEqualTo: uid)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (event) => event.docs
+              .map((e) => Post.fromMap(e.data() as Map<String, dynamic>))
+              .toList(),
+        );
+  }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:reddity/features/feed/feed_screen.dart';
-import 'package:reddity/features/home/screen/home_screen.dart';
 import 'package:reddity/features/posts/screens/add_post_screens.dart';
 
 class Constants {

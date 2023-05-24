@@ -6,6 +6,7 @@ import 'package:reddity/core/providers/storage_repository_providers.dart';
 import 'package:reddity/core/utils.dart';
 import 'package:reddity/features/auth/controller/auth_controller.dart';
 import 'package:reddity/features/user_profile/repository/user_profile_respository.dart';
+import 'package:reddity/models/post_model.dart';
 import 'package:reddity/models/user_model.dart';
 import 'package:routemaster/routemaster.dart';
 
@@ -17,6 +18,10 @@ final userProfileControllerProvider =
       userProfileRepository: userProfileRepository,
       storageRepository: storageRepository,
       ref: ref);
+});
+
+final getUserPostsProvider = StreamProvider.family((ref, String userId) {
+  return ref.read(userProfileControllerProvider.notifier).getUserPosts(userId);
 });
 
 class UserProfileController extends StateNotifier<bool> {
@@ -62,5 +67,9 @@ class UserProfileController extends StateNotifier<bool> {
       _ref.read(userProvider.notifier).update((state) => user);
       Routemaster.of(context).pop();
     });
+  }
+
+  Stream<List<Post>> getUserPosts(String uid) {
+    return _userProfileRepository.getUserPosts(uid);
   }
 }
