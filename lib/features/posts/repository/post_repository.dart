@@ -42,4 +42,14 @@ class PostRepository {
             .map((e) => Post.fromMap(e.data() as Map<String, dynamic>))
             .toList());
   }
+
+  FutureVoid deletePost(Post post) async {
+    try {
+      return right(_post.doc(post.id).delete());
+    } on FirebaseException catch (e) {
+      throw e.message!;
+    } catch (e) {
+      return left(Failure(message: e.toString()));
+    }
+  }
 }

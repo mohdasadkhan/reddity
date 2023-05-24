@@ -11,7 +11,8 @@ import 'package:reddity/models/post_model.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:uuid/uuid.dart';
 
-final userPostsProvider = StreamProvider.family((ref, List<Community> communities) {
+final userPostsProvider =
+    StreamProvider.family((ref, List<Community> communities) {
   final postController = ref.watch(postControllerProvider.notifier);
   return postController.fetchUserPosts(communities);
 });
@@ -150,5 +151,11 @@ class PostController extends StateNotifier<bool> {
       return _postRepository.fetchUserPosts(communities);
     }
     return Stream.value([]);
+  }
+
+  void deletePost(Post post, BuildContext context) async {
+    final res = await _postRepository.deletePost(post);
+    res.fold((l) => showSnackBar(context, l.message),
+        (r) => showSnackBar(context, 'Post Deleted Successfully'));
   }
 }
